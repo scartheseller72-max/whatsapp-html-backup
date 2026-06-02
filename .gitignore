@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# WhatsApp Web session credentials — NEVER commit. Contains your live login.
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Generated backups (may contain private chat content + media)
+output/
+backups/
+
+# Local config with personal values
+config.json
+
+# Logs / OS
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

@@ -1,0 +1,32 @@
+{
+  "_comment": "Copy this file to config.json and edit. All fields are optional — CLI flags override these values.",
+
+  "outputDir": "output",
+  "sessionDir": ".wwebjs_auth",
+
+  "dateFrom": null,
+  "dateTo": null,
+
+  "chats": [],
+
+  "downloadMedia": true,
+  "maxMessagesPerChat": 0,
+
+  "includeStatus": false,
+  "includeGroups": true,
+  "includeContacts": true,
+
+  "throttleMs": 120,
+  "mediaConcurrency": 3,
+
+  "_field_help": {
+    "dateFrom": "Only include messages on/after this date. Format YYYY-MM-DD or null for no lower bound.",
+    "dateTo": "Only include messages on/before this date (inclusive). Format YYYY-MM-DD or null for no upper bound.",
+    "chats": "Array of chat names or phone numbers to include. Empty array = ALL chats.",
+    "downloadMedia": "true = download photos/voice/video/docs into media folder. false = text only.",
+    "maxMessagesPerChat": "0 = fetch as many as WhatsApp Web exposes. Otherwise cap per chat.",
+    "includeStatus": "Include the Status/Broadcast pseudo-chat.",
+    "throttleMs": "Delay between message-fetch operations to stay stable on large accounts.",
+    "mediaConcurrency": "How many media files to download in parallel."
+  }
+}
