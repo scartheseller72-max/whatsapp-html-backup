@@ -1,16 +1,19 @@
 {
   "name": "whatsapp-html-backup",
-  "version": "1.0.0",
-  "description": "Export your own WhatsApp chats to a beautiful, human-readable Telegram-style HTML archive (per-chat pages + index, with full media).",
+  "version": "2.0.0",
+  "description": "Export your own WhatsApp chats to a beautiful, human-readable Telegram-style HTML archive — per-chat pages, stats dashboard, media gallery, in-chat search, plus PDF/JSON/CSV/single-file export and an optional browser Web UI.",
   "type": "commonjs",
   "main": "src/index.js",
   "bin": {
-    "wa-backup": "src/index.js"
+    "wa-backup": "bin/wa-backup.js"
   },
   "scripts": {
     "start": "node src/index.js",
     "backup": "node src/index.js",
-    "logout": "node src/index.js --logout"
+    "wizard": "node src/index.js --wizard",
+    "serve": "node src/index.js --serve",
+    "logout": "node src/index.js --logout",
+    "test": "node --test"
   },
   "keywords": [
     "whatsapp",
@@ -18,7 +21,10 @@
     "export",
     "html",
     "archive",
-    "whatsapp-web.js"
+    "pdf",
+    "json",
+    "whatsapp-web.js",
+    "chat-export"
   ],
   "author": "",
   "license": "MIT",
@@ -27,6 +33,8 @@
   },
   "dependencies": {
     "whatsapp-web.js": "^1.26.0",
-    "qrcode-terminal": "^0.12.0"
+    "qrcode-terminal": "^0.12.0",
+    "qrcode": "^1.5.3",
+    "express": "^4.19.2"
   }
 }

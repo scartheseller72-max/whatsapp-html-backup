@@ -13,7 +13,39 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 const { humanFileSize, log } = require('./utils');
+
+/**
+ * Download a remote URL to a file (used for profile pictures / link-preview
+ * thumbnails). Runs on the user's machine where direct egress is available.
+ * Resolves to the absolute path on success, or null on any failure.
+ */
+function downloadUrl(url, destPath, timeoutMs = 12000) {
+  return new Promise((resolve) => {
+    try {
+      const mod = url.startsWith('https:') ? https : http;
+      const req = mod.get(url, { timeout: timeoutMs }, (res) => {
+        if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          res.resume();
+          resolve(downloadUrl(res.headers.location, destPath, timeoutMs));
+          return;
+        }
+        if (res.statusCode !== 200) { res.resume(); resolve(null); return; }
+        fs.mkdirSync(path.dirname(destPath), { recursive: true });
+        const out = fs.createWriteStream(destPath);
+        res.pipe(out);
+        out.on('finish', () => out.close(() => resolve(destPath)));
+        out.on('error', () => resolve(null));
+      });
+      req.on('timeout', () => { req.destroy(); resolve(null); });
+      req.on('error', () => resolve(null));
+    } catch (_) {
+      resolve(null);
+    }
+  });
+}
 
 // Minimal mimetype -> extension map, covering the common WhatsApp payloads.
 const MIME_EXT = {
@@ -132,4 +164,6 @@ async function downloadMessageMedia(msg, mediaDir, hashCache) {
   return meta;
 }
 
-module.exports = { downloadMessageMedia, extFromMime, kindFromMime };
+module.exports = {
+  downloadMessageMedia, extFromMime, kindFromMime, downloadUrl,
+};

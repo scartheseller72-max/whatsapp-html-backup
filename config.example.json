@@ -10,23 +10,29 @@
   "chats": [],
 
   "downloadMedia": true,
+  "downloadAvatars": true,
+  "linkPreviews": true,
   "maxMessagesPerChat": 0,
 
   "includeStatus": false,
   "includeGroups": true,
-  "includeContacts": true,
+
+  "incremental": false,
+  "format": "html",
 
   "throttleMs": 120,
-  "mediaConcurrency": 3,
+  "port": 3000,
 
   "_field_help": {
-    "dateFrom": "Only include messages on/after this date. Format YYYY-MM-DD or null for no lower bound.",
-    "dateTo": "Only include messages on/before this date (inclusive). Format YYYY-MM-DD or null for no upper bound.",
+    "dateFrom": "Only include messages on/after this date. YYYY-MM-DD or null.",
+    "dateTo": "Only include messages on/before this date (inclusive). YYYY-MM-DD or null.",
     "chats": "Array of chat names or phone numbers to include. Empty array = ALL chats.",
-    "downloadMedia": "true = download photos/voice/video/docs into media folder. false = text only.",
-    "maxMessagesPerChat": "0 = fetch as many as WhatsApp Web exposes. Otherwise cap per chat.",
-    "includeStatus": "Include the Status/Broadcast pseudo-chat.",
-    "throttleMs": "Delay between message-fetch operations to stay stable on large accounts.",
-    "mediaConcurrency": "How many media files to download in parallel."
+    "downloadMedia": "true = download photos/voice/video/docs. false = text only.",
+    "downloadAvatars": "Download contact/group profile pictures.",
+    "linkPreviews": "Fetch Open Graph previews for links in messages.",
+    "maxMessagesPerChat": "0 = as many as WhatsApp Web exposes. Otherwise cap per chat.",
+    "incremental": "Only re-fetch chats with new activity since the last run.",
+    "format": "Comma list of extra exports: pdf,json,ndjson,csv,singlefile (html always on).",
+    "port": "Port for the --serve Web UI."
   }
 }
