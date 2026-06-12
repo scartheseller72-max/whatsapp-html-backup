@@ -3,137 +3,295 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>WhatsApp HTML Backup</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E">
 <style>
-  :root{--bg:#0e1621;--panel:#17212b;--text:#e9edf0;--mid:#8fa3b3;--dim:#6d7f8f;
-    --accent:#1ebe6b;--accent2:#0d8a5f;--bubble:#182533;--divider:#0b121a;}
+  :root{
+    --bg:#0e1621;--panel:#17212b;--panel-2:#1c2733;--text:#e9edf0;--mid:#8fa3b3;--dim:#6d7f8f;
+    --accent:#1ebe6b;--accent2:#0d8a5f;--danger:#ff5c5c;--bubble:#182533;--divider:#26323e;
+    --radius:14px;
+  }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
-  .wrap{max-width:760px;margin:0 auto;padding:30px 20px 60px}
-  header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
-  header .logo{width:44px;height:44px;border-radius:10px;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));}
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,'Noto Sans','Noto Sans Sinhala',sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:780px;margin:0 auto;padding:32px 20px 60px}
+
+  header{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+  header .logo{width:46px;height:46px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;font-size:22px}
   header h1{font-size:21px;margin:0}
-  .sub{color:var(--mid);font-size:13px;margin:2px 0 22px}
-  .card{background:var(--panel);border-radius:14px;padding:20px;margin-bottom:18px;
-    box-shadow:0 1px 3px rgba(0,0,0,.3)}
-  .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .sub{color:var(--mid);font-size:13.5px;margin:2px 0 24px}
+
+  .card{background:var(--panel);border-radius:var(--radius);padding:22px;margin-bottom:18px;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.03)}
+  .card h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);
+    margin:0 0 16px;font-weight:600}
+
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
   .field{flex:1 1 160px;min-width:140px}
   label{display:block;font-size:12.5px;color:var(--mid);margin-bottom:5px}
-  input[type=text],input[type=date],select{width:100%;background:var(--bg);color:var(--text);
-    border:1px solid var(--divider);border-radius:8px;padding:9px 11px;font-size:14px;outline:none}
-  input:focus,select:focus{border-color:var(--accent)}
-  .checks{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 4px}
-  .checks label{display:flex;align-items:center;gap:6px;color:var(--text);font-size:13.5px;margin:0}
-  .fmt{display:flex;gap:14px;flex-wrap:wrap}
+  input[type=text],input[type=date],input[type=number],select{width:100%;background:var(--bg);color:var(--text);
+    border:1px solid var(--divider);border-radius:9px;padding:9px 12px;font-size:14px;outline:none;
+    transition:border-color .15s,box-shadow .15s}
+  input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,190,107,.15)}
+
+  .checks{display:flex;gap:8px 18px;flex-wrap:wrap;margin:4px 0}
+  .checks label{display:flex;align-items:center;gap:7px;color:var(--text);font-size:13.5px;margin:0;
+    cursor:pointer;padding:4px 0}
+  .checks input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+
+  details.adv{margin-top:14px;border-top:1px solid var(--divider);padding-top:12px}
+  details.adv summary{cursor:pointer;color:var(--mid);font-size:13px;user-select:none;list-style:none;
+    display:flex;align-items:center;gap:6px}
+  details.adv summary::before{content:'▸';transition:transform .15s;font-size:11px}
+  details.adv[open] summary::before{transform:rotate(90deg)}
+  details.adv summary:hover{color:var(--text)}
+  details.adv .row{margin-top:14px}
+
+  .actions{display:flex;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap}
+  button{font:inherit}
   button.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06120c;
-    border:none;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
-  button.primary:disabled{opacity:.5;cursor:not-allowed}
-  button.ghost{background:rgba(255,255,255,.07);color:var(--text);border:none;border-radius:9px;
-    padding:11px 18px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
-  .status-line{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-  .dot{width:10px;height:10px;border-radius:50%;background:var(--dim)}
-  .dot.live{background:var(--accent);box-shadow:0 0 0 4px rgba(30,190,107,.2)}
-  .dot.err{background:#ff5c5c}
-  .qr{text-align:center;padding:10px}
-  .qr img{width:260px;height:260px;background:#fff;border-radius:10px;padding:8px}
-  .qr p{color:var(--mid);font-size:13px}
-  .bar{height:10px;background:var(--bubble);border-radius:6px;overflow:hidden;margin:10px 0}
-  .bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .3s}
+    border:none;border-radius:10px;padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;
+    transition:transform .12s,box-shadow .12s;box-shadow:0 2px 10px rgba(30,190,107,.25)}
+  button.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 16px rgba(30,190,107,.35)}
+  button.primary:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  button.danger{background:rgba(255,92,92,.12);color:var(--danger);border:1px solid rgba(255,92,92,.35);
+    border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+  button.danger:hover:not(:disabled){background:rgba(255,92,92,.22)}
+  button.danger:disabled{opacity:.45;cursor:not-allowed}
+  a.ghost{background:rgba(255,255,255,.07);color:var(--text);border:none;border-radius:10px;
+    padding:12px 20px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block;
+    transition:background .15s}
+  a.ghost:hover{background:rgba(255,255,255,.13)}
+  a.ghost.cta{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06120c;font-weight:700}
+
+  .status-line{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--dim);flex:0 0 auto}
+  .dot.live{background:var(--accent);box-shadow:0 0 0 4px rgba(30,190,107,.2);animation:pulse 1.6s infinite}
+  .dot.err{background:var(--danger);box-shadow:0 0 0 4px rgba(255,92,92,.18)}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(30,190,107,.25)}50%{box-shadow:0 0 0 7px rgba(30,190,107,.08)}}
+  #phase{font-size:15px}
+  .elapsed{color:var(--dim);font-size:12.5px;margin-left:auto;font-variant-numeric:tabular-nums}
+
+  .live-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:14px 0}
+  .ls{background:var(--panel-2);border-radius:10px;padding:10px 14px}
+  .ls .n{font-size:20px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .ls .l{font-size:11.5px;color:var(--dim);margin-top:2px}
+
+  .current-chat{color:var(--mid);font-size:13px;margin:2px 0 10px;min-height:18px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .qr{text-align:center;padding:14px 10px}
+  .qr img{width:260px;height:260px;background:#fff;border-radius:12px;padding:10px}
+  .qr p{color:var(--mid);font-size:13px;max-width:340px;margin:10px auto 0}
+
+  .bar{height:8px;background:var(--bubble);border-radius:6px;overflow:hidden;margin:12px 0}
+  .bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));
+    transition:width .4s ease;border-radius:6px}
+
   .log{background:#0b1219;border-radius:10px;padding:12px;height:220px;overflow:auto;
-    font-family:'SF Mono',Menlo,Consolas,monospace;font-size:12px;color:#9fb4c4;white-space:pre-wrap}
+    font-family:'SF Mono',Menlo,Consolas,monospace;font-size:12px;color:#9fb4c4;white-space:pre-wrap;
+    border:1px solid rgba(255,255,255,.04)}
+  .log::-webkit-scrollbar{width:8px}
+  .log::-webkit-scrollbar-thumb{background:var(--divider);border-radius:4px}
+
   .hidden{display:none}
-  .warn{background:rgba(255,180,0,.1);border-left:3px solid #ffb400;border-radius:8px;
-    padding:10px 13px;font-size:12.5px;color:#d8c08a;margin-top:14px}
+  .warn{background:rgba(255,180,0,.08);border-left:3px solid #ffb400;border-radius:8px;
+    padding:10px 14px;font-size:12.5px;color:#d8c08a;margin-top:16px;line-height:1.5}
+  .done-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><div class="logo"></div><div><h1>WhatsApp HTML Backup</h1></div></header>
+  <header><div class="logo">💬</div><div><h1>WhatsApp HTML Backup</h1></div></header>
   <div class="sub">Link your account, back up your chats, and read them as a beautiful offline archive.</div>
 
   <div class="card" id="form-card">
+    <h2>Backup options</h2>
     <div class="row">
-      <div class="field"><label>From date (optional)</label><input type="date" id="from"></div>
-      <div class="field"><label>To date (optional)</label><input type="date" id="to"></div>
+      <div class="field"><label for="from">From date (optional)</label><input type="date" id="from"></div>
+      <div class="field"><label for="to">To date (optional)</label><input type="date" id="to"></div>
     </div>
-    <div class="field" style="margin-bottom:12px">
-      <label>Specific chats (optional, comma-separated names/numbers — blank = all)</label>
+    <div class="field" style="margin-bottom:14px">
+      <label for="chats">Specific chats (optional, comma-separated names/numbers — blank = all)</label>
       <input type="text" id="chats" placeholder="e.g. Amma, Office Group, +94771234567">
     </div>
     <div class="checks">
       <label><input type="checkbox" id="media" checked> Download media</label>
       <label><input type="checkbox" id="groups" checked> Include groups</label>
+      <label><input type="checkbox" id="avatars" checked> Profile pictures</label>
+      <label><input type="checkbox" id="linkprev" checked> Link previews</label>
       <label><input type="checkbox" id="incremental"> Incremental (only new)</label>
     </div>
-    <label style="margin-top:10px">Extra exports</label>
-    <div class="fmt">
+    <div style="margin-top:14px"><label>Extra exports (HTML archive is always generated)</label></div>
+    <div class="checks">
       <label><input type="checkbox" class="fmt-c" value="pdf"> PDF</label>
       <label><input type="checkbox" class="fmt-c" value="json"> JSON</label>
       <label><input type="checkbox" class="fmt-c" value="csv"> CSV</label>
       <label><input type="checkbox" class="fmt-c" value="singlefile"> Single-file HTML</label>
     </div>
-    <div style="margin-top:18px">
-      <button class="primary" id="start-btn" onclick="start()">Start backup</button>
+    <details class="adv">
+      <summary>Advanced</summary>
+      <div class="row">
+        <div class="field"><label for="max">Max messages per chat (0 = all)</label><input type="number" id="max" min="0" placeholder="0"></div>
+        <div class="field"><label for="throttle">Throttle between messages (ms)</label><input type="number" id="throttle" min="0" placeholder="120"></div>
+      </div>
+    </details>
+    <div class="actions">
+      <button class="primary" id="start-btn" onclick="start()">▶ Start backup</button>
     </div>
-    <div class="warn">whatsapp-web.js is an unofficial client — use only your own account. This server is localhost-only; never expose it to a network.</div>
+    <div class="warn">whatsapp-web.js is an unofficial client — use it only with your own account.
+      This server binds to localhost by design; never expose it to a network.</div>
   </div>
 
   <div class="card hidden" id="run-card">
-    <div class="status-line"><span class="dot" id="dot"></span><strong id="phase">Idle</strong>
-      <span id="counter" style="color:var(--mid);font-size:13px;margin-left:auto"></span></div>
-    <div class="qr hidden" id="qr-box"><img id="qr-img" alt="QR"><p>Open WhatsApp → Settings → Linked Devices → Link a Device, then scan.</p></div>
+    <h2>Progress</h2>
+    <div class="status-line">
+      <span class="dot" id="dot"></span><strong id="phase">Idle</strong>
+      <span class="elapsed" id="elapsed"></span>
+    </div>
+    <div class="qr hidden" id="qr-box">
+      <img id="qr-img" alt="WhatsApp pairing QR code">
+      <p>Open WhatsApp on your phone → <strong>Settings → Linked Devices → Link a Device</strong>, then scan this code.</p>
+    </div>
+    <div class="live-stats" id="live-stats">
+      <div class="ls"><div class="n" id="ls-chats">0/0</div><div class="l">Chats</div></div>
+      <div class="ls"><div class="n" id="ls-msgs">0</div><div class="l">Messages processed</div></div>
+    </div>
+    <div class="current-chat" id="counter"></div>
     <div class="bar"><div class="fill" id="fill"></div></div>
-    <div class="log" id="log"></div>
-    <div style="margin-top:14px" class="hidden" id="done-box">
-      <a class="ghost" href="/archive/index.html" target="_blank" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06120c;font-weight:600">Open archive →</a>
-      <a class="ghost" href="/archive/stats.html" target="_blank">Overall stats</a>
+    <div class="log" id="log" aria-live="polite"></div>
+    <div class="actions">
+      <button class="danger hidden" id="stop-btn" onclick="stop()">■ Stop after current message</button>
+    </div>
+    <div class="done-actions hidden" id="done-box">
+      <a class="ghost cta" href="/archive/index.html" target="_blank">Open archive →</a>
+      <a class="ghost" href="/archive/stats.html" target="_blank">📊 Overall stats</a>
     </div>
   </div>
 </div>
 
 <script>
+'use strict';
+var polling = false;
+var startedAt = null;
+
+function $(id){ return document.getElementById(id); }
+
 function selectedFormats(){
-  var f=['html'];document.querySelectorAll('.fmt-c:checked').forEach(function(c){f.push(c.value)});return f.join(',');
+  var f = ['html'];
+  document.querySelectorAll('.fmt-c:checked').forEach(function(c){ f.push(c.value); });
+  return f.join(',');
 }
+
 async function start(){
-  document.getElementById('start-btn').disabled=true;
-  document.getElementById('run-card').classList.remove('hidden');
-  var body={
-    from:document.getElementById('from').value||'',
-    to:document.getElementById('to').value||'',
-    chats:document.getElementById('chats').value||'',
-    noMedia:!document.getElementById('media').checked,
-    noGroups:!document.getElementById('groups').checked,
-    incremental:document.getElementById('incremental').checked,
-    format:selectedFormats()
+  $('start-btn').disabled = true;
+  $('run-card').classList.remove('hidden');
+  $('done-box').classList.add('hidden');
+  $('stop-btn').classList.remove('hidden');
+  $('stop-btn').disabled = false;
+  $('run-card').scrollIntoView({ behavior:'smooth', block:'start' });
+  var body = {
+    from: $('from').value || '',
+    to: $('to').value || '',
+    chats: $('chats').value || '',
+    noMedia: !$('media').checked,
+    noGroups: !$('groups').checked,
+    noAvatars: !$('avatars').checked,
+    noLinkPreviews: !$('linkprev').checked,
+    incremental: $('incremental').checked,
+    max: $('max').value || '',
+    throttle: $('throttle').value || '',
+    format: selectedFormats()
   };
   try{
-    var r=await fetch('/api/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok){var e=await r.json();alert(e.error||'Failed to start');document.getElementById('start-btn').disabled=false;return;}
-  }catch(err){alert('Could not reach server');document.getElementById('start-btn').disabled=false;return;}
-  poll();
+    var r = await fetch('/api/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if(!r.ok){
+      var e = await r.json();
+      alert(e.error || 'Failed to start');
+      $('start-btn').disabled = false;
+      $('stop-btn').classList.add('hidden');
+      return;
+    }
+  }catch(err){
+    alert('Could not reach the server');
+    $('start-btn').disabled = false;
+    $('stop-btn').classList.add('hidden');
+    return;
+  }
+  startedAt = Date.now();
+  if(!polling) poll();
 }
-var phaseLabels={idle:'Idle',connecting:'Connecting…',qr:'Waiting for QR scan',ready:'Connected',running:'Backing up…',render:'Building pages…',export:'Exporting…',done:'Done',error:'Error'};
+
+async function stop(){
+  $('stop-btn').disabled = true;
+  try{ await fetch('/api/stop', { method:'POST' }); }catch(e){ /* status poll will recover */ }
+}
+
+var phaseLabels = {
+  idle:'Idle', connecting:'Connecting…', qr:'Waiting for QR scan', ready:'Connected',
+  chats:'Selecting chats…', running:'Backing up…', stopping:'Stopping…',
+  render:'Building pages…', export:'Exporting…', done:'Done ✓', error:'Error'
+};
+
+function fmtElapsed(ms){
+  var s = Math.floor(ms/1000);
+  var m = Math.floor(s/60); s = s%60;
+  var h = Math.floor(m/60); m = m%60;
+  return (h ? h+'h ' : '') + (m ? m+'m ' : '') + s + 's';
+}
+
 async function poll(){
+  polling = true;
   try{
-    var s=await (await fetch('/api/status')).json();
-    var dot=document.getElementById('dot');
-    dot.className='dot'+(s.phase==='error'?' err':(s.running||s.phase==='qr'?' live':''));
-    document.getElementById('phase').textContent=phaseLabels[s.phase]||s.phase;
-    var qb=document.getElementById('qr-box');
-    if(s.phase==='qr'&&s.qrDataUrl){qb.classList.remove('hidden');document.getElementById('qr-img').src=s.qrDataUrl;}
+    var s = await (await fetch('/api/status')).json();
+    var dot = $('dot');
+    dot.className = 'dot' + (s.phase==='error' ? ' err' : (s.running || s.phase==='qr' ? ' live' : ''));
+    $('phase').textContent = phaseLabels[s.phase] || s.phase;
+    $('elapsed').textContent = (s.running && s.startedAt) ? fmtElapsed(Date.now()-s.startedAt) : '';
+
+    var qb = $('qr-box');
+    if(s.phase==='qr' && s.qrDataUrl){ qb.classList.remove('hidden'); $('qr-img').src = s.qrDataUrl; }
     else qb.classList.add('hidden');
-    document.getElementById('counter').textContent=s.chatTotal?('chat '+s.chatIndex+'/'+s.chatTotal+(s.chat?' · '+s.chat:'')):'';
-    var pctv=s.chatTotal?Math.round(s.chatIndex/s.chatTotal*100):(s.phase==='done'?100:0);
-    document.getElementById('fill').style.width=pctv+'%';
-    var logEl=document.getElementById('log');logEl.textContent=(s.log||[]).join('\n');logEl.scrollTop=logEl.scrollHeight;
-    if(s.phase==='done'){document.getElementById('done-box').classList.remove('hidden');document.getElementById('start-btn').disabled=false;return;}
-    if(s.phase==='error'){document.getElementById('start-btn').disabled=false;return;}
-  }catch(e){/* keep polling */}
-  setTimeout(poll,1000);
+
+    $('ls-chats').textContent = (s.chatIndex||0) + '/' + (s.chatTotal||0);
+    $('ls-msgs').textContent = (s.messages||0).toLocaleString();
+    $('counter').textContent = s.chat ? ('Current: ' + s.chat) : '';
+
+    var pct = s.chatTotal ? Math.round(s.chatIndex/s.chatTotal*100) : (s.phase==='done' ? 100 : 0);
+    $('fill').style.width = pct + '%';
+
+    var logEl = $('log');
+    var atBottom = logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 30;
+    logEl.textContent = (s.log||[]).join('\n');
+    if(atBottom) logEl.scrollTop = logEl.scrollHeight;
+
+    if(s.phase==='done' || s.phase==='error'){
+      if(s.phase==='done') $('done-box').classList.remove('hidden');
+      $('stop-btn').classList.add('hidden');
+      $('start-btn').disabled = false;
+      polling = false;
+      return;
+    }
+  }catch(e){ /* server briefly unreachable — keep polling */ }
+  setTimeout(poll, 1000);
 }
+
+// If a backup is already running when the page loads, attach to it.
+(async function init(){
+  try{
+    var s = await (await fetch('/api/status')).json();
+    if(s.running || s.phase==='done' || s.phase==='error'){
+      $('run-card').classList.remove('hidden');
+      if(s.running){ $('start-btn').disabled = true; $('stop-btn').classList.remove('hidden'); }
+      if(s.phase==='done') $('done-box').classList.remove('hidden');
+      poll();
+    }
+  }catch(e){ /* ignore */ }
+}());
 </script>
 </body>
 </html>

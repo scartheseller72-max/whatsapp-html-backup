@@ -45,7 +45,8 @@ test('exportCsv writes header and rows with safe quoting', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wac-'));
   exportCsv(sampleChats(), dir);
   const csv = fs.readFileSync(path.join(dir, 'exports', 'csv', 'Amma.csv'), 'utf8');
-  const lines = csv.trim().split('\n');
+  assert.strictEqual(csv[0], '\ufeff', 'starts with a UTF-8 BOM for Excel');
+  const lines = csv.slice(1).trim().split('\n');
   assert.match(lines[0], /^datetime,sender,fromMe,type,body,media_path$/);
   assert.strictEqual(lines.length, 3);
   assert.match(lines[2], /chats\/Amma\/media\/x\.jpg/);

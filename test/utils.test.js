@@ -19,6 +19,12 @@ test('formatMessageText converts newlines to <br>', () => {
   assert.match(u.formatMessageText('a\nb'), /a<br>b/);
 });
 
+test('formatMessageText leaves code-block contents literal', () => {
+  const out = u.formatMessageText('see ```*not bold* http://x.com``` end');
+  assert.match(out, /<code class="wa-code">\*not bold\* http:\/\/x\.com<\/code>/);
+  assert.doesNotMatch(out, /<code[^>]*>[\s\S]*<(strong|a )[\s\S]*<\/code>/);
+});
+
 test('safeFilename strips unsafe characters', () => {
   assert.strictEqual(u.safeFilename('A/B:C*?'), 'A_B_C_');
   assert.strictEqual(u.safeFilename(''), 'chat');

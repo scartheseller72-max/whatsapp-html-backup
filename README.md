@@ -53,6 +53,14 @@ exports land in `output/exports/{pdf,json,csv,singlefile}/`.
 | **Web UI** | Local **Express dashboard** — scan the QR in your browser, watch live progress, browse the finished archive |
 | **Distribution** | MIT license, **GitHub Actions CI**, **Dockerfile**, `npx` bin, unit tests |
 
+### v2.1 polish
+
+| Pack | Highlights |
+|------|------------|
+| **Reader UX** | System-aware theme with no flash-of-dark, **lightbox with prev/next + arrow keys**, **chat-type filter tabs** (All / Chats / Groups), scroll-to-top, `/` focuses search, Esc clears |
+| **Web UI** | Redesigned dashboard: live chat/message counters, elapsed time, **Stop button** (graceful — partial archive is still rendered), profile-picture / link-preview / max / throttle options, reattaches to a running backup on page reload |
+| **Fixes** | Unicode (e.g. සිංහල) chat names now match `--chats` selection, WhatsApp ```code blocks``` are no longer re-formatted, CSV ships a UTF-8 BOM for Excel, per-chat **progress bar + ETA** in the terminal, `--help` output fixed |
+
 ---
 
 ## System Requirements
