@@ -65,9 +65,15 @@ function extractOg(html, url) {
 function fetchPreview(url, cache, timeoutMs = 10000) {
   if (cache && cache.has(url)) return Promise.resolve(cache.get(url));
   return new Promise((resolve) => {
-    const done = (val) => { if (cache) cache.set(url, val); resolve(val); };
-    let mod;
-    try { mod = url.startsWith('https:') ? https : http; } catch (_) { return done(null); }
+    let settled = false;
+    const done = (val) => {
+      if (settled) return;
+      settled = true;
+      if (cache) cache.set(url, val);
+      resolve(val);
+    };
+    if (!/^https?:\/\//i.test(url)) return done(null);
+    const mod = url.startsWith('https:') ? https : http;
     try {
       const req = mod.get(url, {
         timeout: timeoutMs,

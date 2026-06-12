@@ -16,7 +16,7 @@ const EMOJI_RE = /(\p{Extended_Pictographic}(‍\p{Extended_Pictographic})*)/gu;
 const STOPWORDS = new Set([
   'the', 'and', 'you', 'are', 'for', 'that', 'this', 'with', 'have', 'not',
   'but', 'was', 'all', 'can', 'will', 'your', 'they', 'from', 'what', 'how',
-  'mama', 'eka', 'eka', 'oya', 'oyaa', 'mata', 'eke', 'nam', 'naa', 'hari',
+  'mama', 'eka', 'oya', 'oyaa', 'mata', 'eke', 'nam', 'naa', 'hari',
   'ok', 'okay', 'yes', 'no', 'lol', 'haha', 'https', 'http', 'www', 'com',
 ]);
 

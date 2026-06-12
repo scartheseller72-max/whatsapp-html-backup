@@ -39,7 +39,8 @@ function exportCsv(chats, outputDir) {
         m.media && m.media.relPath ? `chats/${c.folderName}/${m.media.relPath}` : '',
       ]));
     }
-    fs.writeFileSync(path.join(dir, `${c.folderName}.csv`), `${lines.join('\n')}\n`);
+    // UTF-8 BOM so Excel detects the encoding (Sinhala/emoji-safe).
+    fs.writeFileSync(path.join(dir, `${c.folderName}.csv`), `\ufeff${lines.join('\n')}\n`);
   }
   return dir;
 }

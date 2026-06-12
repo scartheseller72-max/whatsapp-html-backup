@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-html-backup",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Export your own WhatsApp chats to a beautiful, human-readable Telegram-style HTML archive — per-chat pages, stats dashboard, media gallery, in-chat search, plus PDF/JSON/CSV/single-file export and an optional browser Web UI.",
   "type": "commonjs",
   "main": "src/index.js",

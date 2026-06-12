@@ -22,14 +22,17 @@ const { humanFileSize, log } = require('./utils');
  * thumbnails). Runs on the user's machine where direct egress is available.
  * Resolves to the absolute path on success, or null on any failure.
  */
-function downloadUrl(url, destPath, timeoutMs = 12000) {
+function downloadUrl(url, destPath, timeoutMs = 12000, redirectsLeft = 5) {
   return new Promise((resolve) => {
     try {
+      if (!/^https?:/i.test(url)) { resolve(null); return; }
       const mod = url.startsWith('https:') ? https : http;
       const req = mod.get(url, { timeout: timeoutMs }, (res) => {
         if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           res.resume();
-          resolve(downloadUrl(res.headers.location, destPath, timeoutMs));
+          if (redirectsLeft <= 0) { resolve(null); return; }
+          const nextUrl = new URL(res.headers.location, url).href;
+          resolve(downloadUrl(nextUrl, destPath, timeoutMs, redirectsLeft - 1));
           return;
         }
         if (res.statusCode !== 200) { res.resume(); resolve(null); return; }

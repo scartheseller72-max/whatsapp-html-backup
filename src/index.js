@@ -6,45 +6,54 @@
  *
  * Thin wrapper around the shared backup core. Supports a one-shot terminal
  * backup, an interactive wizard, a local Web UI, and session logout.
- *
- * Usage:
- *   node src/index.js [options]
- *
- * Options:
- *   --from YYYY-MM-DD        Only messages on/after this date
- *   --to YYYY-MM-DD          Only messages on/before this date (inclusive)
- *   --chats "A,B,+9477..."   Only these chats (name/number substrings). Default: all
- *   --out <dir>              Output directory (default: output)
- *   --format <list>          Extra exports: pdf,json,ndjson,csv,singlefile (html always on)
- *   --no-media               Skip downloading media (text only)
- *   --no-avatars             Skip profile-picture downloads
- *   --no-link-previews       Skip fetching link previews
- *   --max <n>                Cap messages fetched per chat
- *   --no-groups              Exclude group chats
- *   --include-status         Include the Status/Broadcast pseudo-chat
- *   --throttle <ms>          Delay between message operations (default: 120)
- *   --incremental            Only fetch chats with new activity since last run
- *   --config <file>          Load defaults from JSON (default: config.json)
- *   --wizard                 Interactive setup prompts
- *   --serve [--port <n>]     Launch the browser Web UI instead of a CLI run
- *   --logout                 Delete the saved session and exit
- *   --help                   Show this help
+ * Run with --help for the full option list (see HELP below).
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const { parseArgs, buildOptions } = require('./cli');
-const { runBackup } = require('./backup');
 const { runWizard } = require('./wizard');
 const { createLogger } = require('./logger');
+const { Progress } = require('./progress');
 
 const ROOT = path.resolve(__dirname, '..');
 
+const HELP = `
+whatsapp-html-backup — export your WhatsApp chats to a readable HTML archive.
+
+Usage:
+  node src/index.js [options]
+
+Options:
+  --from YYYY-MM-DD        Only messages on/after this date
+  --to YYYY-MM-DD          Only messages on/before this date (inclusive)
+  --chats "A,B,+9477..."   Only these chats (name/number substrings). Default: all
+  --out <dir>              Output directory (default: output)
+  --format <list>          Extra exports: pdf,json,ndjson,csv,singlefile (html always on)
+  --no-media               Skip downloading media (text only)
+  --no-avatars             Skip profile-picture downloads
+  --no-link-previews       Skip fetching link previews
+  --max <n>                Cap messages fetched per chat
+  --no-groups              Exclude group chats
+  --include-status         Include the Status/Broadcast pseudo-chat
+  --throttle <ms>          Delay between message operations (default: 120)
+  --incremental            Only fetch chats with new activity since last run
+  --config <file>          Load defaults from JSON (default: config.json)
+  --wizard                 Interactive setup prompts
+  --serve [--port <n>]     Launch the browser Web UI instead of a CLI run
+  --logout                 Delete the saved session and exit
+  --help                   Show this help
+`;
+
 function printHelp() {
-  const src = fs.readFileSync(__filename, 'utf8').split('\n');
-  const block = src.slice(6, 38).map((l) => l.replace(/^ \*?/, '')).join('\n');
-  console.log(block);
+  console.log(HELP.trimEnd());
+}
+
+/** Fixed-width progress label so the bar doesn't jump between chats. */
+function truncatePad(name) {
+  const s = String(name || '');
+  return (s.length > 18 ? `${s.slice(0, 17)}…` : s).padEnd(18);
 }
 
 async function main() {
@@ -84,8 +93,23 @@ async function main() {
   logger.info(`Chats:      ${opts.chats.length ? opts.chats.join(', ') : 'ALL'}`);
   logger.info(`Formats:    ${opts.format}${opts.incremental ? ' · incremental' : ''}`);
 
+  // Per-chat terminal progress bar (TTY-aware; quiet fallback otherwise).
+  let progress = null;
+  const hooks = {
+    logger,
+    onChatStart: (name, total) => {
+      progress = total > 0 ? new Progress(total, truncatePad(name)) : null;
+    },
+    onMessage: () => { if (progress) progress.tick(); },
+    onChatEnd: () => { if (progress) { progress.done(); progress = null; } },
+  };
+
   try {
-    await runBackup(opts, { logger });
+    // Lazy-require so --help/--logout work before `npm install` completes
+    // (the backup core pulls in whatsapp-web.js).
+    // eslint-disable-next-line global-require
+    const { runBackup } = require('./backup');
+    await runBackup(opts, hooks);
   } catch (err) {
     logger.error(err && err.stack ? err.stack : err);
     logger.close();

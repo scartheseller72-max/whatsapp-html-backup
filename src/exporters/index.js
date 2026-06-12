@@ -36,8 +36,9 @@ async function runExports(formats, chats, outputDir, log) {
         // eslint-disable-next-line no-await-in-loop
         const r = await exportPdf(chats, outputDir, log);
         results.pdf = r;
-        if (!r.ok && log) {
-          log.warn(`PDF export skipped (${r.reason}). Tip: open a chat's index.html and use the browser's Print → Save as PDF (a print stylesheet is included).`);
+        if (log) {
+          if (r.ok) log.info(`  Exported pdf (${r.count} file${r.count === 1 ? '' : 's'}) → ${r.dir}`);
+          else log.warn(`PDF export skipped (${r.reason}). Tip: open a chat's index.html and use the browser's Print → Save as PDF (a print stylesheet is included).`);
         }
       }
       if (log && results[fmt] && results[fmt].ok && fmt !== 'pdf') log.info(`  Exported ${fmt} → ${results[fmt].dir}`);

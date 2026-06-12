@@ -17,14 +17,18 @@ const {
   tsToDate, safeFilename, sleep, log,
 } = require('./utils');
 
+/** Strip everything but letters/digits (any script) for fuzzy name matching. */
+function normalizeForMatch(str) {
+  return String(str || '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+}
+
 function chatMatchesSelection(chat, selection) {
   if (!selection || selection.length === 0) return true;
-  const name = (chat.name || '').toLowerCase();
+  const nameNorm = normalizeForMatch(chat.name);
   const number = (chat.id && chat.id.user ? chat.id.user : '').toLowerCase();
   return selection.some((sel) => {
-    const s = String(sel).toLowerCase().replace(/[^a-z0-9]/gi, '');
-    const nameNorm = name.replace(/[^a-z0-9]/gi, '');
-    const digits = s.replace(/\D/g, '');
+    const s = normalizeForMatch(sel);
+    const digits = String(sel).replace(/\D/g, '');
     return (nameNorm && s && nameNorm.includes(s)) || (digits && number.includes(digits));
   });
 }
@@ -257,10 +261,13 @@ async function processChat(chat, opts, client) {
     hashCache: new Map(),
   };
 
+  if (opts.onChatStart) opts.onChatStart(chatName, filtered.length);
+
   const messages = [];
   let mediaCount = 0;
   const mediaItems = [];
   for (const m of filtered) {
+    if (opts.shouldStop && opts.shouldStop()) break;
     // eslint-disable-next-line no-await-in-loop
     const norm = await normalizeMessage(m, ctx);
     if (norm.media && !norm.media.error && !norm.media.skipped) {
@@ -274,6 +281,8 @@ async function processChat(chat, opts, client) {
     }
     if (opts.onMessage) opts.onMessage();
   }
+
+  if (opts.onChatEnd) opts.onChatEnd(chatName, messages.length);
 
   messages.sort((a, b) => a.timestamp - b.timestamp);
 
@@ -305,4 +314,6 @@ async function selectChats(client, opts) {
   });
 }
 
-module.exports = { selectChats, processChat, resolveContactName };
+module.exports = {
+  selectChats, processChat, resolveContactName, chatMatchesSelection,
+};

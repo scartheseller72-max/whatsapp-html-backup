@@ -10,6 +10,10 @@
  *   hooks.logger     logger-like object (info/warn/error/step)
  *   hooks.onQr(str)  raw QR string for browser rendering
  *   hooks.onPhase(name, data)   lifecycle: connecting|ready|chat|render|export|done
+ *   hooks.onChatStart(name, totalMessages) / hooks.onChatEnd()
+ *   hooks.onMessage()           one normalized message processed
+ *   hooks.shouldStop()          return true to stop gracefully after the
+ *                               current message; partial results are rendered
  */
 
 const fs = require('fs');
@@ -47,6 +51,10 @@ async function runBackup(opts, hooks = {}) {
   opts.formats = parseFormats(opts.format);
   opts.linkCache = new Map();
   if (opts.onMessage === undefined && hooks.onMessage) opts.onMessage = hooks.onMessage;
+  if (opts.onChatStart === undefined && hooks.onChatStart) opts.onChatStart = hooks.onChatStart;
+  if (opts.onChatEnd === undefined && hooks.onChatEnd) opts.onChatEnd = hooks.onChatEnd;
+  if (opts.shouldStop === undefined && hooks.shouldStop) opts.shouldStop = hooks.shouldStop;
+  const stopRequested = () => !!(opts.shouldStop && opts.shouldStop());
 
   fs.mkdirSync(path.join(opts.outputDir, 'chats'), { recursive: true });
   const st = state.load(opts.outputDir);
@@ -75,6 +83,10 @@ async function runBackup(opts, hooks = {}) {
     phase('chats', { count: chats.length });
 
     for (let i = 0; i < chats.length; i += 1) {
+      if (stopRequested()) {
+        log.warn('Stop requested — finishing with the chats processed so far.');
+        break;
+      }
       const chat = chats[i];
       const chatName = chat.name || (chat.id && chat.id.user ? `+${chat.id.user}` : 'Unknown');
       const folderName = safeFilename(chatName, chat.isGroup ? 'group' : 'chat');

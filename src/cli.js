@@ -87,9 +87,15 @@ function argsFromBody(body) {
   if (body.format) args.format = body.format;
   if (body.out) args.out = body.out;
   if (body.noMedia) args.noMedia = true;
+  if (body.noAvatars) args.noAvatars = true;
+  if (body.noLinkPreviews) args.noLinkPreviews = true;
   if (body.noGroups) args.noGroups = true;
   if (body.incremental) args.incremental = true;
   if (body.includeStatus) args.includeStatus = true;
+  const max = parseInt(body.max, 10);
+  if (Number.isFinite(max) && max > 0) args.max = max;
+  const throttle = parseInt(body.throttle, 10);
+  if (Number.isFinite(throttle) && throttle >= 0) args.throttle = throttle;
   return args;
 }
 

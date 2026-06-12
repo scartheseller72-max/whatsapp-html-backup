@@ -31,7 +31,7 @@ function startServer(baseArgs) {
   let outputDir = buildOptions(baseArgs, ROOT).outputDir;
 
   const status = {
-    phase: 'idle',          // idle | connecting | qr | ready | running | done | error
+    phase: 'idle',          // idle | connecting | qr | ready | running | stopping | done | error
     qrDataUrl: null,
     log: [],
     chat: null,
@@ -42,6 +42,7 @@ function startServer(baseArgs) {
     error: null,
     running: false,
     startedAt: null,
+    stopRequested: false,
   };
 
   function pushLog(level, parts) {
@@ -74,8 +75,13 @@ function startServer(baseArgs) {
     status.log = [];
     status.error = null;
     status.summary = null;
+    status.chat = null;
+    status.chatIndex = 0;
+    status.chatTotal = 0;
+    status.messages = 0;
     status.running = true;
     status.startedAt = Date.now();
+    status.stopRequested = false;
     res.json({ started: true });
 
     const hooks = {
@@ -91,6 +97,7 @@ function startServer(baseArgs) {
         else if (status.phase !== 'running' && status.phase !== 'done') status.phase = name;
       },
       onMessage: () => { status.messages += 1; },
+      shouldStop: () => status.stopRequested,
     };
 
     try {
@@ -102,6 +109,14 @@ function startServer(baseArgs) {
     } finally {
       status.running = false;
     }
+  });
+
+  app.post('/api/stop', (req, res) => {
+    if (!status.running) return res.status(409).json({ error: 'No backup is running.' });
+    status.stopRequested = true;
+    status.phase = 'stopping';
+    logger.warn('Stop requested from the Web UI.');
+    return res.json({ stopping: true });
   });
 
   // Serve the finished archive. Resolved lazily so it follows the chosen out dir.
