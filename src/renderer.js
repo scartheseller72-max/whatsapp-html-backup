@@ -361,8 +361,13 @@ function renderIndexPage(summaries, meta) {
   const cards = summaries.map((s) => {
     const prev = s.lastPreview ? escapeHtml(s.lastPreview) : '<em>no messages</em>';
     const when = s.lastDate ? escapeHtml(formatFull(s.lastDate)) : '';
+    // s.avatarRel is relative to the chat's own folder (e.g. "avatar.jpg");
+    // the index lives at the archive root, so prefix it with chats/<folder>/.
+    const avatarRel = s.avatarRel
+      ? `chats/${encodeURIComponent(s.folderName)}/${s.avatarRel}`
+      : null;
     return `<a class="chat-card" href="chats/${encodeURIComponent(s.folderName)}/index.html" data-name="${escapeHtml(s.chatName.toLowerCase())}" data-kind="${s.isGroup ? 'group' : 'direct'}">
-  ${avatarHtml(s.chatName, s.avatarRel)}
+  ${avatarHtml(s.chatName, avatarRel)}
   <div class="cc-body">
     <div class="cc-name">${escapeHtml(s.chatName)} ${s.isGroup ? '<span class="tag-group">group</span>' : ''}</div>
     <div class="cc-prev">${prev}</div>

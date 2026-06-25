@@ -96,6 +96,11 @@ async function runBackup(opts, hooks = {}) {
         const saved = state.getSummary(st, folderName);
         if (saved) {
           processedSummaries.push({ ...saved, lastDate: saved.lastTimestamp ? tsToDate(saved.lastTimestamp) : null });
+          // Re-include this chat in the global stats so stats.html reflects the
+          // whole archive, not just chats that changed this run. (Older state
+          // files predate persisted stats — skip gracefully until reprocessed.)
+          const savedStats = state.getStats(st, folderName);
+          if (savedStats) perChatForGlobal.push({ chatName: saved.chatName, stats: savedStats });
           log.info(`[${i + 1}/${chats.length}] ${chatName} — no new messages, kept`);
           continue;
         }
@@ -153,7 +158,7 @@ async function runBackup(opts, hooks = {}) {
         messages: result.messages,
         members: result.members,
       });
-      state.update(st, result.folderName, summary.lastTimestamp, summary.total, summary);
+      state.update(st, result.folderName, summary.lastTimestamp, summary.total, summary, chatStats);
       totalMessages += result.counts.total;
       log.info(`  ${result.counts.total} messages, ${result.counts.media} media`);
     }

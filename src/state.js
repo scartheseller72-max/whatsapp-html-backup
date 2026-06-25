@@ -37,12 +37,15 @@ function lastTimestamp(state, folderName) {
   return e && e.lastTimestamp ? e.lastTimestamp : 0;
 }
 
-function update(state, folderName, lastTs, total, summary) {
+function update(state, folderName, lastTs, total, summary, stats) {
   const prev = state.chats[folderName] || {};
   state.chats[folderName] = {
     lastTimestamp: lastTs || prev.lastTimestamp || 0,
     total,
     summary: summary || prev.summary || null,
+    // Persisted so an --incremental run can rebuild global stats for chats it
+    // skips (otherwise stats.html would only reflect chats changed this run).
+    stats: stats || prev.stats || null,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -52,6 +55,11 @@ function getSummary(state, folderName) {
   return e && e.summary ? e.summary : null;
 }
 
+function getStats(state, folderName) {
+  const e = state.chats[folderName];
+  return e && e.stats ? e.stats : null;
+}
+
 module.exports = {
-  load, save, lastTimestamp, update, getSummary, statePath,
+  load, save, lastTimestamp, update, getSummary, getStats, statePath,
 };

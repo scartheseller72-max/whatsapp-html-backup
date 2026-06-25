@@ -9,7 +9,7 @@
 [![CI](https://github.com/scartheseller72-max/whatsapp-html-backup/actions/workflows/ci.yml/badge.svg)](https://github.com/scartheseller72-max/whatsapp-html-backup/actions/workflows/ci.yml)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-43853d)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Version](https://img.shields.io/badge/version-2.0.0-1ebe6b)
+![Version](https://img.shields.io/badge/version-2.1.0-1ebe6b)
 
 </div>
 

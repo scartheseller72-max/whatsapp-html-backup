@@ -60,6 +60,15 @@ test('renderIndexPage lists chats and links to global stats', () => {
   assert.match(html, /Amma/);
 });
 
+test('renderIndexPage points avatars at the chat folder, not the archive root', () => {
+  const html = r.renderIndexPage([
+    { chatName: 'Office Group', folderName: 'Office Group', isGroup: true, total: 3, lastDate: tsToDate(base), lastPreview: 'hi', avatarRel: 'avatar.jpg' },
+  ], { totalChats: 1, totalMessages: 3, dateFrom: null, dateTo: null, generatedAt: 'now', hasLogo: false });
+  // The index lives at the archive root, so a bare "avatar.jpg" would 404.
+  assert.match(html, /<img src="chats\/Office%20Group\/avatar\.jpg"/);
+  assert.doesNotMatch(html, /<img src="avatar\.jpg"/);
+});
+
 test('renderGalleryPage renders media cells', () => {
   const html = r.renderGalleryPage({
     chatName: 'Amma', isGroup: false, counts: { total: 0, media: 2 }, avatarRel: null, hasStats: true,
